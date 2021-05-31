@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="index.css">
+</head>
+<body>
+<div id="main">
+<h2>Calculo Tempo de Execução</h2><br><br>
+
+    <input  id="clock" type="" name="" placeholder="Informe o Clock da Maquina em Mhz" v-model="clock" v-on:keyup="cperiodo(),digitou()"><br><br>
+
+    <button v-on:click="add" id="adicionar">Add instrução</button><button v-on:click="del" id="deletar">Deletar instrução</button><br><br>
+
+    <span>Quantidade de instruções</span><span id="ciclo">Ciclos por instrução</span><br>
+
+    
+    <input class="n" name="">
+    <input class="ci" name="">
+
+    <div v-for='n in i'>
+    	<input v-on:keyup="digitou"  value="" class="n">
+    	<input v-on:keyup="digitou" class="ci" >
+    <br></div><br><br>
+
+    <button v-bind:style="objstyle" disabled id="calcular" v-on:click="calcular()">Calcular</button>
+
+    <span><h3>Período:{{ periodo }} ns</h4></span>
+    <span><h3>CPI:{{cpi}} ciclos por instrução</h3></span>
+    <span><h3>Ic:{{ic}}</h3></span>
+    <span><h3>Tempo de execucão de um programa:{{te}} ms</h3></span>
+    <span><h3>MIPS:{{mips}} milhões de instruções por segundo</h3></span><br><br>
+
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script type="text/javascript">
+	  new Vue({
+      el:'#main',
+      data:{
+      i:0,
+      c:0,
+      ic:0,
+      te:0,
+      clock:'',
+      periodo:0,
+      mips:0,
+      cpi:0,
+      objstyle:{
+        backgroundColor:"black",
+        cursor:"not-allowed"
+      }
+      },
+      methods:{
+      	 add:function(){//add linha
+      	 	this.i++;
+      	 },
+         del:function(){ //deletar linha
+         	if(this.i>0){
+             this.i--;
+         	}
+      	 },
+      	 cperiodo:function(){//calcular periodo
+      	 	this.periodo=(1/(this.clock*10000000))*10000000000;
+      	 },
+      	 calcular:function(){ //função para calcular ic,mips,cpi e tempo de execução
+      	 	var mult=0;
+      	 	this.c++;
+
+      	 	var n=document.querySelectorAll('.n');//qunatidade de instruções
+      	 	var ci=document.querySelectorAll('.ci');//ciclos por segundo
+
+      	 	if(this.c>=2){ //ic irá zerar após o segundo click no botão calcular,pois dessa forma ele não irá guardar o valor do calculo anterior
+      	 		this.ic=0;
+      	 	}
+
+      	 		for(i=0;i<n.length;i++){
+                    this.ic+=parseInt(n[i].value);//calcular ic
+                    mult+=ci[i].value*n[i].value;//fazer a multiplição das colunas 1 e 2 segundo a ordem das linhas
+      	 		}   
+
+      	 		this.cpi=(mult/this.ic).toFixed(2);//calcular cpi e deixar fixado 2 numeros após a virgula
+      	 		this.te=((this.ic*this.cpi*(this.periodo/1000000))).toFixed(4);//calcular tempo de execução e deixar fixado 4 numeros após a virgula
+      	 		this.mips=(((this.ic/(this.te*10000000))*10000)).toFixed(3);//calcular mips e deixar fixado 3 numeros após a virgula
+      	 },
+         digitou:function(){
+          var n=document.querySelectorAll('.n');//qunatidade de instruções
+          var ci=document.querySelectorAll('.ci');
+          var btn=document.querySelector('#calcular');
+           var r=0;
+          for(i=0;i<n.length;i++){
+                  if(n[i].value != "" && ci[i] != "" && this.clock != ""){
+                      this.objstyle.backgroundColor="#1E90FF";
+                      this.objstyle.cursor="pointer";
+                      btn.disabled=false;
+
+                  }
+                  else{
+                      this.objstyle.backgroundColor="black";
+                      this.objstyle.cursor="not-allowed";
+                  }
+            }   
+           
+         }
+      }
+	});
+</script>
+</html>
